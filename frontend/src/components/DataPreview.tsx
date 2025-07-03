@@ -4,18 +4,19 @@ import { ArrowBackIos, ArrowForwardIos, Visibility, VisibilityOff } from '@mui/i
 import axios from 'axios';
 
 interface DataPreviewProps {
-  setHeaders: (headers: string[]) => void;
-  setSampleData: (data: any[]) => void;
-  setAllData: (data: any[]) => void;
-  allData: any[];
-  headers: string[];
+  setUploadedData: (data: any[]) => void;
+  setUploadedHeaders: (headers: string[]) => void;
+  setUploadedFilename: (filename: string) => void;
+  uploadedData: any[];
+  uploadedHeaders: string[];
+  uploadedFilename: string;
 }
 
 const ROWS_PER_PAGE = 5; // Display 5 rows at a time
 const MAX_COL_LENGTH = 50; // Max characters for column display
 
-const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, setAllData, allData, headers }) => {
-  const [fileName, setFileName] = useState<string>("");
+const DataPreview: React.FC<DataPreviewProps> = ({ setUploadedData, setUploadedHeaders, setUploadedFilename, uploadedData, uploadedHeaders, uploadedFilename }) => {
+  
   const [currentPage, setCurrentPage] = useState(0);
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set());
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -41,16 +42,16 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
       formData.append('file', file);
 
       try {
-        const response = await axios.post('http://localhost:8000/api/upload_csv', formData, {
+        const response = await axios.post('/api/upload_csv', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-        setFileName(response.data.filename);
-        setHeaders(response.data.headers);
+        setUploadedFilename(file.name);
+        setUploadedHeaders(response.data.headers);
         // setHeadersState(response.data.headers); // This state is no longer needed, using headers directly
-        setAllData(response.data.allData);
-        setSampleData(response.data.allData.slice(0, ROWS_PER_PAGE)); // Initial sample for LiveTestWindow
+        setUploadedData(response.data.allData);
+        setUploadedData(response.data.allData.slice(0, ROWS_PER_PAGE)); // Initial sample for LiveTestWindow
 
         // Initialize visible columns: if nothing saved, show all
         if (visibleColumns.size === 0) {
@@ -66,9 +67,9 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
 
   const handleNextPage = () => {
     const newPage = currentPage + 1;
-    if (newPage * ROWS_PER_PAGE < allData.length) {
+    if (newPage * ROWS_PER_PAGE < uploadedData.length) {
       setCurrentPage(newPage);
-      setSampleData(allData.slice(newPage * ROWS_PER_PAGE, (newPage + 1) * ROWS_PER_PAGE));
+      setUploadedData(uploadedData.slice(newPage * ROWS_PER_PAGE, (newPage + 1) * ROWS_PER_PAGE));
     }
   };
 
@@ -76,7 +77,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
     const newPage = currentPage - 1;
     if (newPage >= 0) {
       setCurrentPage(newPage);
-      setSampleData(allData.slice(newPage * ROWS_PER_PAGE, (newPage + 1) * ROWS_PER_PAGE));
+      setUploadedData(uploadedData.slice(newPage * ROWS_PER_PAGE, (newPage + 1) * ROWS_PER_PAGE));
     }
   };
 
@@ -91,7 +92,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
   };
 
   const handleShowAllColumns = () => {
-    setVisibleColumns(new Set(headers));
+    setVisibleColumns(new Set(uploadedHeaders));
   };
 
   const handleHideAllColumns = () => {
@@ -117,8 +118,8 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
     return str;
   };
 
-  const displayedHeaders = headers.filter((header: string) => visibleColumns.has(header));
-  const displayedRows = allData && Array.isArray(allData) ? allData.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE) : [];
+  const displayedHeaders = uploadedHeaders.filter((header: string) => visibleColumns.has(header));
+  const displayedRows = uploadedData && Array.isArray(uploadedData) ? uploadedData.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE) : [];
 
   return (
     <Paper sx={{ p: 2, border: '1px solid #e0e0e0' }}>
@@ -130,7 +131,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
             <input type="file" hidden onChange={handleFileChange} accept=".csv" />
           </Button>
           <IconButton onClick={handlePopoverOpen} aria-describedby={id}>
-            {visibleColumns.size === headers.length && headers.length > 0 ? <Visibility /> : <VisibilityOff />}
+            {visibleColumns.size === uploadedHeaders.length && uploadedHeaders.length > 0 ? <Visibility /> : <VisibilityOff />}
           </IconButton>
           <Popover
             id={id}
@@ -151,7 +152,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
               <Button onClick={handleShowAllColumns} size="small">Show All</Button>
               <Button onClick={handleHideAllColumns} size="small">Hide All</Button>
               <FormGroup>
-                {headers.map((header: string) => (
+                {uploadedHeaders.map((header: string) => (
                   <FormControlLabel
                     key={header}
                     control={
@@ -168,7 +169,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
           </Popover>
         </Box>
       </Box>
-      {fileName && <Typography variant="subtitle1" sx={{ mb: 2, color: 'text.secondary' }}>File: {fileName} ({allData.length} rows)</Typography>}
+      {uploadedFilename && <Typography variant="subtitle1" sx={{ mb: 2, color: 'text.secondary' }}>File: {uploadedFilename} ({uploadedData.length} rows)</Typography>}
       
       <TableContainer sx={{ maxHeight: 440, border: '1px solid #f0f0f0' }}>
         <Table stickyHeader size="small" sx={{ '& .MuiTableCell-root': { border: '1px solid #e0e0e0' } }}>
@@ -195,9 +196,9 @@ const DataPreview: React.FC<DataPreviewProps> = ({ setHeaders, setSampleData, se
           <ArrowBackIos />
         </IconButton>
         <Typography variant="body2" sx={{ mx: 2, alignSelf: 'center' }}>
-          Page {currentPage + 1} of {Math.ceil(allData.length / ROWS_PER_PAGE)}
+          Page {currentPage + 1} of {Math.ceil(uploadedData.length / ROWS_PER_PAGE)}
         </Typography>
-        <IconButton onClick={handleNextPage} disabled={(currentPage + 1) * ROWS_PER_PAGE >= allData.length}>
+        <IconButton onClick={handleNextPage} disabled={(currentPage + 1) * ROWS_PER_PAGE >= uploadedData.length}>
           <ArrowForwardIos />
         </IconButton>
       </Box>

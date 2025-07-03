@@ -4,10 +4,10 @@ import Editor from '@monaco-editor/react';
 import axios from 'axios';
 
 interface AIAssistantProps {
-  headers: string[];
+  uploadedHeaders: string[];
 }
 
-const AIAssistant: React.FC<AIAssistantProps> = ({ headers }) => {
+const AIAssistant: React.FC<AIAssistantProps> = ({ uploadedHeaders }) => {
   const [prompt, setPrompt] = useState<string>("");
   const [generatedCode, setGeneratedCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -16,9 +16,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ headers }) => {
     setIsLoading(true);
     setGeneratedCode(""); // Clear previous code
     try {
-      const response = await axios.post('http://localhost:8000/api/generate_function', {
+      const response = await axios.post('/api/generate_function', {
         prompt,
-        headers,
+        headers: uploadedHeaders,
       });
       setGeneratedCode(response.data.code);
     } catch (error: any) {
@@ -41,7 +41,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ headers }) => {
         onChange={(e) => setPrompt(e.target.value)}
         sx={{ mb: 2 }}
       />
-      <Button variant="contained" onClick={handleGenerate} disabled={!prompt || !headers.length || isLoading}>
+      <Button variant="contained" onClick={handleGenerate} disabled={!prompt || !uploadedHeaders.length || isLoading}>
         {isLoading ? 'Generating...' : 'Generate Function'}
       </Button>
       {generatedCode && (

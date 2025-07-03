@@ -5,12 +5,17 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import axios from 'axios';
 
 interface ManuscriptEditorProps {
-  manuscript: any[];
-  setManuscript: (manuscript: any[]) => void;
+  manuscript?: any[];
+  setManuscript?: (manuscript: any[]) => void;
   headers: string[];
+  uploadedData: any[];
+  uploadedHeaders: string[];
+  uploadedFilename: string;
+  runningFullManuscript: boolean;
+  setRunningFullManuscript: (running: boolean) => void;
 }
 
-const ManuscriptEditor: React.FC<ManuscriptEditorProps> = ({ manuscript, setManuscript, headers }) => {
+const ManuscriptEditor: React.FC<ManuscriptEditorProps> = ({ manuscript, setManuscript, headers, uploadedData, uploadedHeaders, uploadedFilename, runningFullManuscript, setRunningFullManuscript }) => {
   const [functions, setFunctions] = useState<any>({});
   const [selectedFunction, setSelectedFunction] = useState<string>("");
   const [manuscriptName, setManuscriptName] = useState<string>("");
@@ -25,7 +30,7 @@ const ManuscriptEditor: React.FC<ManuscriptEditorProps> = ({ manuscript, setManu
     const fetchFunctions = async () => {
       setLoadingFunctions(true);
       try {
-        const response = await axios.get('http://localhost:8000/api/functions');
+        const response = await axios.get('/api/functions');
         const funcs: Record<string, any> = {};
         for (const key in response.data as Record<string, any>) {
           const funcData = response.data[key];
@@ -48,7 +53,7 @@ const ManuscriptEditor: React.FC<ManuscriptEditorProps> = ({ manuscript, setManu
     const fetchManuscripts = async () => {
       setLoadingManuscripts(true);
       try {
-        const response = await axios.get('http://localhost:8000/api/manuscripts');
+        const response = await axios.get('/api/manuscripts');
         setSavedManuscripts(response.data);
       } catch (error) {
         console.error("Error fetching manuscripts:", error);
@@ -94,9 +99,9 @@ const ManuscriptEditor: React.FC<ManuscriptEditorProps> = ({ manuscript, setManu
 
   const handleSave = async () => {
     try {
-      await axios.post(`http://localhost:8000/api/manuscripts/${manuscriptName}`, manuscript);
+      await axios.post(`/api/manuscripts/${manuscriptName}`, manuscript);
       alert("Manuscript saved!");
-      const response = await axios.get('http://localhost:8000/api/manuscripts');
+      const response = await axios.get('/api/manuscripts');
       setSavedManuscripts(response.data);
     } catch (error) {
       console.error("Error saving manuscript:", error);
@@ -106,9 +111,8 @@ const ManuscriptEditor: React.FC<ManuscriptEditorProps> = ({ manuscript, setManu
 
   const handleLoad = async (name: string) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/manuscripts/${name}`);
-      setManuscript(response.data);
-      setManuscriptName(name);
+      const response = await axios.get(`/api/manuscripts/${name}`);
+      setManuscript([]);
     } catch (error) {
       console.error("Error loading manuscript:", error);
       alert("Error loading manuscript.");

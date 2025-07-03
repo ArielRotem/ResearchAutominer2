@@ -4,12 +4,14 @@ import { Button, Paper, Typography, Table, TableBody, TableCell, TableContainer,
 import axios from 'axios';
 
 interface LiveTestWindowProps {
-  manuscript: any[];
-  sampleData: any[];
-  headers: string[];
+  manuscript?: any[];
+  sampleData?: any[];
+  headers?: string[];
+  uploadedData: any[];
+  uploadedHeaders: string[];
 }
 
-const LiveTestWindow: React.FC<LiveTestWindowProps> = ({ manuscript, sampleData, headers }) => {
+const LiveTestWindow: React.FC<LiveTestWindowProps> = ({ manuscript, sampleData, headers, uploadedData, uploadedHeaders }) => {
   const [outputData, setOutputData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [testingManuscript, setTestingManuscript] = useState<boolean>(false);
@@ -17,9 +19,9 @@ const LiveTestWindow: React.FC<LiveTestWindowProps> = ({ manuscript, sampleData,
   const handleTest = async () => {
     setError(null); // Clear previous errors
     try {
-      const response = await axios.post('http://localhost:8000/api/test_manuscript', {
+      const response = await axios.post('/api/test_manuscript', {
         manuscript,
-        sample_data: sampleData,
+        sample_data: uploadedData.slice(0, 5),
       });
       setOutputData(response.data);
     } catch (err: any) {
@@ -51,13 +53,13 @@ const LiveTestWindow: React.FC<LiveTestWindowProps> = ({ manuscript, sampleData,
             <Table stickyHeader size="small" sx={{ '& .MuiTableCell-root': { borderBottom: '1px solid #e0e0e0' } }}>
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => (
+                  {uploadedHeaders.map((header) => (
                     <TableCell key={header}>{header}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sampleData.slice(0, 5).map((row, index) => (
+                {uploadedData.slice(0, 5).map((row, index) => (
                   <TableRow key={index}>
                     {headers.map((header) => (
                       <TableCell key={header}>{row[header]}</TableCell>
@@ -74,7 +76,7 @@ const LiveTestWindow: React.FC<LiveTestWindowProps> = ({ manuscript, sampleData,
             <Table stickyHeader size="small" sx={{ '& .MuiTableCell-root': { borderBottom: '1px solid #e0e0e0' } }}>
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => (
+                  {uploadedHeaders.map((header) => (
                     <TableCell key={header}>{header}</TableCell>
                   ))}
                 </TableRow>
@@ -82,7 +84,7 @@ const LiveTestWindow: React.FC<LiveTestWindowProps> = ({ manuscript, sampleData,
               <TableBody>
                 {outputData.map((row, index) => (
                   <TableRow key={index}>
-                    {headers.map((header) => (
+                    {uploadedHeaders.map((header) => (
                       <TableCell key={header}>{row[header]}</TableCell>
                     ))}
                   </TableRow>
