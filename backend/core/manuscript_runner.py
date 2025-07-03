@@ -1,7 +1,7 @@
 
 import pandas as pd
 from typing import List, Dict, Any
-from backend.core.function_loader import load_functions
+from core.function_loader import load_functions
 
 def run_manuscript(df: pd.DataFrame, manuscript: List[Dict[str, Any]]) -> pd.DataFrame:
     """Executes a manuscript (a list of functions and their arguments) on a DataFrame."""

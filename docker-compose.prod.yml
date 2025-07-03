@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  backend:
+    image: arielrotem/research-autominer-backend:latest
+    container_name: researchautominer-backend
+    networks:
+      - web
+
+  frontend:
+    image: arielrotem/research-autominer-frontend:latest
+    container_name: researchautominer-frontend
+    networks:
+      - web
+
+networks:
+  web:
+    external:
+      name: reverse-proxy_web
