@@ -12,6 +12,7 @@ function App() {
   const [uploadedData, setUploadedData] = useState<any[]>([]);
   const [uploadedHeaders, setUploadedHeaders] = useState<string[]>([]);
   const [uploadedFilename, setUploadedFilename] = useState<string>('');
+  const [manuscript, setManuscript] = useState<any[]>([]);
   const [runningFullManuscript, setRunningFullManuscript] = useState<boolean>(false);
 
   return (
@@ -28,6 +29,7 @@ function App() {
                   setUploadedFilename={setUploadedFilename}
                   uploadedData={uploadedData}
                   uploadedHeaders={uploadedHeaders}
+                  uploadedFilename={uploadedFilename}
                 />
                 <ManuscriptEditor
                   uploadedData={uploadedData}
@@ -36,6 +38,8 @@ function App() {
                   runningFullManuscript={runningFullManuscript}
                   setRunningFullManuscript={setRunningFullManuscript}
                   headers={uploadedHeaders}
+                  manuscript={manuscript}
+                  setManuscript={setManuscript}
                 />
                 <AIAssistant uploadedHeaders={uploadedHeaders} />
                 <LiveTestWindow uploadedData={uploadedData} uploadedHeaders={uploadedHeaders} />

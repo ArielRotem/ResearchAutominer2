@@ -38,7 +38,7 @@ const LiveTestWindow: React.FC<LiveTestWindowProps> = ({ manuscript, sampleData,
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>Live Data Test</Typography>
-      <Button variant="contained" onClick={handleTest} disabled={!manuscript.length || !sampleData.length || testingManuscript} sx={{ mb: 2 }}>
+      <Button variant="contained" onClick={handleTest} disabled={!manuscript?.length || !sampleData?.length || testingManuscript} sx={{ mb: 2 }}>
         {testingManuscript ? <CircularProgress size={24} /> : 'Test'}
       </Button>
       {error && (
@@ -61,7 +61,7 @@ const LiveTestWindow: React.FC<LiveTestWindowProps> = ({ manuscript, sampleData,
               <TableBody>
                 {uploadedData.slice(0, 5).map((row, index) => (
                   <TableRow key={index}>
-                    {headers.map((header) => (
+                    {uploadedHeaders.map((header) => (
                       <TableCell key={header}>{row[header]}</TableCell>
                     ))}
                   </TableRow>

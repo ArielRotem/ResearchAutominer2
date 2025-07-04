@@ -5,8 +5,8 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import axios from 'axios';
 
 interface ManuscriptEditorProps {
-  manuscript?: any[];
-  setManuscript?: (manuscript: any[]) => void;
+  manuscript: any[];
+  setManuscript: (manuscript: any[]) => void;
   headers: string[];
   uploadedData: any[];
   uploadedHeaders: string[];

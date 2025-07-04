@@ -16,7 +16,6 @@ const ROWS_PER_PAGE = 5; // Display 5 rows at a time
 const MAX_COL_LENGTH = 50; // Max characters for column display
 
 const DataPreview: React.FC<DataPreviewProps> = ({ setUploadedData, setUploadedHeaders, setUploadedFilename, uploadedData, uploadedHeaders, uploadedFilename }) => {
-  
   const [currentPage, setCurrentPage] = useState(0);
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set());
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);

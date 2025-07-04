@@ -16,7 +16,7 @@ docker push $DOCKER_USERNAME/research-autominer-backend:latest
 
 # --- Build and Push Frontend ---
 echo "Building frontend..."
-docker build -t $DOCKER_USERNAME/research-autominer-frontend:latest ./frontend
+docker build --no-cache -t $DOCKER_USERNAME/research-autominer-frontend:latest ./frontend
 
 echo "Pushing frontend to Docker Hub..."
 docker push $DOCKER_USERNAME/research-autominer-frontend:latest
